@@ -11,17 +11,20 @@ public final class GatewayFactory {
 
     public static GatewayPagamento criar(FormaPagamento forma) {
 
-        switch (forma) {
-            case BOLETO:
-            case PIX:
-                return new GatewayPagamentoInterno();
+            switch (forma) {
+                case BOLETO, PIX -> {
+                    return new GatewayPagamentoInterno();
+            }
+                case CARTAO_CREDITO -> {
+                    return new PaySecureGatewayAdapter();
+            }
 
-            case CARTAO_CREDITO:
-                return new PaySecureGatewayAdapter();
+                case CARTEIRA_DIGITAL -> {
+                    return new WalletPaySDKAdapter();
+            }
 
-            default:
-                throw new IllegalArgumentException(
+                default -> throw new IllegalArgumentException(
                         "Forma de pagamento nao suportada: " + forma);
+            }
         }
-    }
 }
