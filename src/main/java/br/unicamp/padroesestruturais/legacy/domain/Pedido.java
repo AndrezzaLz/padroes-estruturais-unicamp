@@ -1,6 +1,6 @@
 package br.unicamp.padroesestruturais.legacy.domain;
 
-public class Pedido {
+public class Pedido implements Cobravel {
 
     private String id;
     private String cliente;
@@ -44,5 +44,10 @@ public class Pedido {
 
     public void setValorBase(double valorBase) {
         this.valorBase = valorBase;
+    }
+
+    @Override
+    public double calcularValor() {
+        return this.getValorBase();
     }
 }
