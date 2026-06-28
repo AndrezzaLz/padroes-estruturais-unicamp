@@ -8,7 +8,7 @@ public class DescontoFidelidadeDecorator extends CobrancaDecorator {
 
     @Override
     public double calcularValor() {
-        // Aplica o desconto de fidelidade de 5% sobre o valor acumulado
+        
         return super.calcularValor() * 0.95;
     }
 }

@@ -8,7 +8,7 @@ public class JurosParcelamentoDecorator extends CobrancaDecorator {
 
     @Override
     public double calcularValor() {
-        // Aplica os juros de parcelamento de 2,99%
+        
         return super.calcularValor() * 1.0299;
     }
 }

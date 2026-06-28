@@ -8,7 +8,7 @@ public class SeguroTransacaoDecorator extends CobrancaDecorator {
 
     @Override
     public double calcularValor() {
-        // Soma o valor fixo de R$ 4,90 do seguro de transação
+       
         return super.calcularValor() + 4.90;
     }
 }
