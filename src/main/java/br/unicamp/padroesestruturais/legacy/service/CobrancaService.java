@@ -5,31 +5,18 @@ import br.unicamp.padroesestruturais.legacy.adapter.GatewayPagamento;
 import br.unicamp.padroesestruturais.legacy.domain.FormaPagamento;
 import br.unicamp.padroesestruturais.legacy.domain.Pedido;
 import br.unicamp.padroesestruturais.legacy.domain.ResultadoCobranca;
+import br.unicamp.padroesestruturais.legacy.domain.Cobravel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CobrancaService {
 
-    private static final double TAXA_DESCONTO_FIDELIDADE = 0.05;
-    private static final double TAXA_JUROS_PARCELAMENTO = 0.0299;
-    private static final double TAXA_OPERACAO_INTERNACIONAL = 0.05;
-    private static final double VALOR_SEGURO = 4.90;
+   
+    public ResultadoCobranca cobrar(Pedido pedido, FormaPagamento forma, Cobravel cobrancaComDecorators) {
 
-    public ResultadoCobranca cobrar(Pedido pedido,
-                                    FormaPagamento forma,
-                                    boolean aplicarDescontoFidelidade,
-                                    boolean aplicarJurosParcelamento,
-                                    boolean aplicarTaxaInternacional,
-                                    boolean aplicarSeguro) {
-
-        double valorFinal = calcularValorFinal(
-                pedido.getValorBase(),
-                aplicarDescontoFidelidade,
-                aplicarJurosParcelamento,
-                aplicarTaxaInternacional,
-                aplicarSeguro
-        );
+       
+        double valorFinal = calcularValorFinal(cobrancaComDecorators);
 
         GatewayPagamento gateway = GatewayFactory.criar(forma);
 
@@ -41,24 +28,17 @@ public class CobrancaService {
         );
     }
 
-    public List<ResultadoCobranca> cobrarEmLote(List<Pedido> pedidos,
-                                                FormaPagamento forma,
-                                                boolean aplicarDescontoFidelidade,
-                                                boolean aplicarJurosParcelamento,
-                                                boolean aplicarTaxaInternacional,
-                                                boolean aplicarSeguro) {
+   
+    public List<ResultadoCobranca> cobrarEmLote(List<Pedido> pedidos, FormaPagamento forma, List<Cobravel> cobrancasDecoradas) {
 
         List<ResultadoCobranca> resultados = new ArrayList<>();
 
-        for (Pedido pedido : pedidos) {
+        for (int i = 0; i < pedidos.size(); i++) {
             resultados.add(
                     cobrar(
-                            pedido,
+                            pedidos.get(i),
                             forma,
-                            aplicarDescontoFidelidade,
-                            aplicarJurosParcelamento,
-                            aplicarTaxaInternacional,
-                            aplicarSeguro
+                            cobrancasDecoradas.get(i)
                     )
             );
         }
@@ -66,30 +46,8 @@ public class CobrancaService {
         return resultados;
     }
 
-    public double calcularValorFinal(double valorBase,
-                                     boolean aplicarDescontoFidelidade,
-                                     boolean aplicarJurosParcelamento,
-                                     boolean aplicarTaxaInternacional,
-                                     boolean aplicarSeguro) {
-
-        double valor = valorBase;
-
-        if (aplicarDescontoFidelidade) {
-            valor -= valor * TAXA_DESCONTO_FIDELIDADE;
-        }
-
-        if (aplicarJurosParcelamento) {
-            valor += valor * TAXA_JUROS_PARCELAMENTO;
-        }
-
-        if (aplicarTaxaInternacional) {
-            valor += valor * TAXA_OPERACAO_INTERNACIONAL;
-        }
-
-        if (aplicarSeguro) {
-            valor += VALOR_SEGURO;
-        }
-
-        return valor;
+    
+    public double calcularValorFinal(Cobravel cobranca) {
+        return cobranca.calcularValor();
     }
 }
